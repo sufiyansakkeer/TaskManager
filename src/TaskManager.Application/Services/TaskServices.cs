@@ -28,15 +28,17 @@ namespace TaskManager.Application.Services
 
         }
 
-        public async Task DeleteTaskAsync(Guid userId, Guid taskId)
+        public async Task<bool> DeleteTaskAsync(Guid userId, Guid taskId)
         {
 
             var task = await _taskRepository.GetByIdAsync(taskId);
             if (task == null || task.UserId != userId)
-                throw new Exception("Task not found or unauthorized");
+                return false;
+
 
             _taskRepository.Delete(task);
             await _unitOfWork.SaveChangesAsync();
+            return true;
         }
 
         public async Task<List<TaskDto>> GetAllTaskAsync()

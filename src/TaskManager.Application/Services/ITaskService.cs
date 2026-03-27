@@ -19,7 +19,7 @@ namespace TaskManager.Application.Interfaces.Service
         Task UpdateTaskAsync(Guid userId, Guid taskId, UpdateTaskDto request);
 
 
-        Task DeleteTaskAsync(Guid userId, Guid taskId);
+        Task<bool> DeleteTaskAsync(Guid userId, Guid taskId);
 
 
     }

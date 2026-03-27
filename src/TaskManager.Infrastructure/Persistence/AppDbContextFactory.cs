@@ -7,14 +7,11 @@ public class AppDbContextFactory : IDesignTimeDbContextFactory<AppDbContext>
 {
     public AppDbContext CreateDbContext(string[] args)
     {
-        var connectionString = "server=localhost;port=3306;database=taskmanagerdb;user=root;password=yourpassword";
+        var connectionString = "Server=localhost,1433;Database=TaskManagerDb;User Id=sa;Password=YourStrong!Pass123;TrustServerCertificate=True;";
 
         var optionsBuilder = new DbContextOptionsBuilder<AppDbContext>();
 
-        optionsBuilder.UseMySql(
-            connectionString,
-            ServerVersion.AutoDetect(connectionString)
-        );
+        optionsBuilder.UseSqlServer(connectionString);
 
         return new AppDbContext(optionsBuilder.Options);
     }

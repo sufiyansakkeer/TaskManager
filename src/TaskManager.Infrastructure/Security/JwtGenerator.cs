@@ -23,8 +23,11 @@ namespace TaskManager.Infrastructure.Security
         }
         public string GenerateToken(User user)
         {
+            if (string.IsNullOrWhiteSpace(_settings.Key))
+                throw new InvalidOperationException("JWT signing key is not configured. Set Jwt:Key in configuration.");
+
             var tokenHandler = new JwtSecurityTokenHandler();
-            var key = Encoding.UTF8.GetBytes(_settings.Secret);
+            var key = Encoding.UTF8.GetBytes(_settings.Key);
 
             var claims = new List<Claim>
           {
@@ -43,6 +46,9 @@ namespace TaskManager.Infrastructure.Security
             var tokenDescriptor = new SecurityTokenDescriptor
             {
                 Subject = new ClaimsIdentity(claims),
+                Issuer = _settings.Issuer,
+                Audience = _settings.Audience,
+                Expires = DateTime.UtcNow.AddHours(1),
                 SigningCredentials = credentials
             };
 
