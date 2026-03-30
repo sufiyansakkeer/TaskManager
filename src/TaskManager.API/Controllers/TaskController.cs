@@ -31,7 +31,7 @@ namespace TaskManager.API.Controllers
         {
             var userId = GetUserId();
             var result = await _taskService.CreateTaskAsync(userId, request);
-            return Ok(result);
+            return CreatedAtAction(nameof(GetTask), new { id = result.Id }, result);
         }
 
         [HttpGet]
@@ -60,7 +60,7 @@ namespace TaskManager.API.Controllers
         {
             var userId = GetUserId();
             await _taskService.UpdateTaskAsync(userId, id, request);
-            return Ok();
+            return NoContent();
         }
 
         [HttpDelete("{id}")]

@@ -29,12 +29,12 @@ namespace TaskManager.Application.Services
         {
             var user = await _userRepository.GetByEmailAsync(request.Email);
             if (user == null)
-                throw new Exception("Invalid credentials");
+                throw new UnauthorizedAccessException("Invalid credentials");
 
             var isValid = _passwordHasher.Verify(request.Password, user.PasswordHash);
 
             if (!isValid)
-                throw new Exception("Invalid credentials");
+                throw new UnauthorizedAccessException("Invalid credentials");
 
             var token = _jwtGenerator.GenerateToken(user);
 
@@ -52,7 +52,7 @@ namespace TaskManager.Application.Services
             var existingEmail = await _userRepository.IsEmailAlreadyExistAsync(request.Email);
 
             if (existingEmail)
-                throw new Exception("User already exist");
+                throw new InvalidOperationException("User already exist");
 
             var hashedPassword = _passwordHasher.Hash(request.Password);
 

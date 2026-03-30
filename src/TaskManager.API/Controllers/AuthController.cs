@@ -27,7 +27,7 @@ namespace TaskManager.API.Controllers
         public async Task<IActionResult> Register(RegisterRequestDto request)
         {
             var result = await _authService.RegisterAsync(request);
-            return Ok(result);
+            return Created("", result);
         }
 
         [HttpPost("login")]

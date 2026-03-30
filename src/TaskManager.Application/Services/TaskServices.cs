@@ -51,7 +51,7 @@ namespace TaskManager.Application.Services
         {
             var task = await _taskRepository.GetByIdAsync(taskId);
             if (task == null || task.UserId != userId)
-                throw new Exception("Task not found or unauthorized");
+                throw new KeyNotFoundException("Task not found or unauthorized");
 
             return MapToDto(task);
         }
