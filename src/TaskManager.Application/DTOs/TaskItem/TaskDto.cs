@@ -15,6 +15,12 @@ namespace TaskManager.Application.DTOs.TaskItem
 
         public bool IsCompleted { get; set; }
 
+        public Guid UserId { get; set; }
+
+        public DateTime CreatedAt { get; set; }
+
+        public DateTime? UpdatedAt { get; set; }
+
 
     }
 }

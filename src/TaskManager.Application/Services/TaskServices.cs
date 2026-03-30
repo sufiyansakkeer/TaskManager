@@ -50,7 +50,7 @@ namespace TaskManager.Application.Services
         public async Task<TaskDto> GetTaskByIdAsync(Guid taskId, Guid userId)
         {
             var task = await _taskRepository.GetByIdAsync(taskId);
-            if (task == null || task.Id == userId)
+            if (task == null || task.UserId != userId)
                 throw new Exception("Task not found or unauthorized");
 
             return MapToDto(task);
@@ -72,6 +72,13 @@ namespace TaskManager.Application.Services
 
             task.Update(request.Title, request.Description);
 
+            if (request.IsCompleted != task.IsCompleted)
+            {
+                if (request.IsCompleted)
+                    task.MarkComplete();
+                else
+                    task.MarkIncomplete();
+            }
             _taskRepository.Update(task);
 
             await _unitOfWork.SaveChangesAsync();
