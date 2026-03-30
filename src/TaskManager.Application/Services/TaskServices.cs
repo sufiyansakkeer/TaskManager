@@ -64,17 +64,18 @@ namespace TaskManager.Application.Services
             return [.. tasks.Select(MapToDto)];
         }
 
-        public async Task UpdateTaskAsync(Guid userId, Guid taskId, UpdateTaskDto request)
+        public async Task<bool> UpdateTaskAsync(Guid userId, Guid taskId, UpdateTaskDto request)
         {
             var task = await _taskRepository.GetByIdAsync(taskId);
             if (task == null || task.UserId != userId)
-                throw new Exception("Task not found or unauthorized");
+                return false;
 
             task.Update(request.Title, request.Description);
 
             _taskRepository.Update(task);
 
             await _unitOfWork.SaveChangesAsync();
+            return true;
 
         }
 

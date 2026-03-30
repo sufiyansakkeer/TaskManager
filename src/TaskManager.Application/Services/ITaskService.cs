@@ -16,7 +16,7 @@ namespace TaskManager.Application.Interfaces.Service
 
         Task<TaskDto> CreateTaskAsync(Guid userId, CreateTaskDto request);
 
-        Task UpdateTaskAsync(Guid userId, Guid taskId, UpdateTaskDto request);
+        Task<bool> UpdateTaskAsync(Guid userId, Guid taskId, UpdateTaskDto request);
 
 
         Task<bool> DeleteTaskAsync(Guid userId, Guid taskId);
