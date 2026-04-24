@@ -1,0 +1,38 @@
+# Web framework for building APIs with Python
+fastapi==0.111.0
+
+# ASGI server for running FastAPI applications
+uvicorn[standard]==0.30.1
+
+# SQL toolkit and ORM for database operations (async support)
+sqlalchemy[asyncio]==2.0.30
+
+# PostgreSQL driver for asyncio
+asyncpg==0.29.0
+
+# Database migration tool for SQLAlchemy
+alembic==1.13.1
+
+# Data validation and settings management (with email support)
+pydantic[email]==2.7.1
+
+# Settings management for Pydantic
+pydantic-settings==2.3.1
+
+# JWT (JSON Web Token) implementation for authentication
+python-jose[cryptography]==3.3.0
+
+# Password hashing and verification (with bcrypt support)
+passlib[bcrypt]==1.7.4
+
+# Support for multipart/form-data in HTTP requests
+python-multipart==0.0.9
+
+# Testing framework for Python
+pytest==8.2.0
+
+# AsyncIO support for pytest
+pytest-asyncio==0.23.7
+
+# Async HTTP client for testing and API calls
+httpx==0.27.0
