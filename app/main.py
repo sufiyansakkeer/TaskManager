@@ -6,7 +6,7 @@ from app.dependencies import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserResponse
 from app.core.security import hash_password, verify_password
-from app.core.auth import create_access_token
+from app.core.auth import create_access_token, get_current_user
 
 app = FastAPI()
 
@@ -66,3 +66,10 @@ async def login(user:UserCreate, db: AsyncSession= Depends(get_db)):
     )
     
     return {"access_token": access_token, "token_type": "bearer"}
+
+@app.get("/me")
+async def get_me(current_user: User = Depends(get_current_user)):
+    return {
+        "email": current_user.email,
+        "id": current_user.id
+    }
