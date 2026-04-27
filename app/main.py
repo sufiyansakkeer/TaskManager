@@ -5,6 +5,8 @@ from app.database import engine,Base
 from app.dependencies import get_db
 from app.models.user import User
 from app.schemas.user import UserCreate, UserResponse
+from app.models.task import Task
+from app.schemas.task import TaskCreate,TaskResponse
 from app.core.security import hash_password, verify_password
 from app.core.auth import create_access_token, get_current_user
 
@@ -73,3 +75,86 @@ async def get_me(current_user: User = Depends(get_current_user)):
         "email": current_user.email,
         "id": current_user.id
     }
+
+@app.post("/tasks",response_model=TaskResponse)
+async def create_task(
+    task: TaskCreate,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    new_task = Task(
+        title = task.title,
+        description= task.description,
+        user_id = current_user.id,
+        is_completed= False,
+        
+    )
+    
+    db.add(new_task)
+    await db.commit()
+    await db.refresh(new_task)
+    
+    return new_task
+
+@app.get("/tasks", response_model=list[TaskResponse])
+async def get_tasks(
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    result= await db.execute(
+        select(Task).where(Task.user_id==current_user.id)
+    )
+    
+    tasks = result.scalars().all()
+    
+    return tasks
+
+@app.put("/tasks/{task_id}",response_model=TaskResponse)
+async def update_task(
+    task_id: int,
+    updated_task: TaskCreate,
+    db:AsyncSession = Depends(get_db),
+    current_user: User= Depends(get_current_user)
+):
+    result = await db.execute(
+        select(Task).where(
+            Task.id == task_id,
+            Task.user_id == current_user.id
+        )
+    )
+    
+    task = result.scalar_one_or_none()
+    
+    if not task:
+        raise HTTPException(status_code=404,detail="Task not found")
+    
+    task.title = updated_task.title
+    task.description = updated_task.description
+    
+    await db.commit()
+    await db.refresh(task)
+    
+    return task
+
+@app.delete("/tasks/{task_id}")
+async def delete_task(
+    task_id:int,
+    db: AsyncSession = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    result = await db.execute(
+        select(Task).where(
+            Task.id== task_id,
+            Task.user_id == current_user.id
+        )
+    )
+    
+    task = result.scalar_one_or_none()
+    
+    if not task:
+        raise HTTPException(status_code=404, detail= "Task not found")
+    
+    await db.delete(task)
+    await db.commit()
+    
+    return {"message": "Task deleted"}
