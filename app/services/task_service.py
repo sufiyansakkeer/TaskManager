@@ -29,14 +29,16 @@ async def get_tasks(
     db: AsyncSession,
     user_id: int,
     skip:int =0,
-    limit: int = 10
+    limit: int = 10,
+    is_completed:bool | None =None
 ):
-    result= await db.execute(
-        select(Task)
-        .where(Task.user_id==user_id)
-        .offset(skip)
-        .limit(limit)
-    )
+    query = select(Task).where(Task.user_id==user_id)
+    
+    if is_completed is not None:
+        query = query.where(Task.is_completed == is_completed)
+        
+    query = query.offset(skip).limit(limit)
+    result= await db.execute(query)
     
     tasks = result.scalars().all()
     
