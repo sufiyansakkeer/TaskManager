@@ -22,10 +22,13 @@ async def create_task(
 
 @router.get("/", response_model=list[TaskResponse])
 async def get_tasks(
+    skip: int = 0,
+    limit: int = 10,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user)
+    
 ):
-    return await task_service.get_tasks(db,current_user.id)
+    return await task_service.get_tasks(db,current_user.id,skip,limit)
 
 @router.put("/{task_id}",response_model=TaskResponse)
 async def update_task(
