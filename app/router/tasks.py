@@ -6,7 +6,7 @@ from app.dependencies import get_db
 from app.schemas.response import APIResponse
 from app.schemas.task import TaskCreate, TaskResponse
 from app.models.user import User
-from app.services import task_service
+from app.services.task_service import TaskService
 
 
 router = APIRouter(prefix="/tasks", tags=["Tasks"])
@@ -18,7 +18,9 @@ async def create_task(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    new_task = await task_service.create_task(task, db, current_user.id)
+    service = TaskService(db)
+
+    new_task = await service.create_task(task, current_user.id)
     return APIResponse(success=True, message="Task created successfully", data=new_task)
 
 
@@ -30,7 +32,8 @@ async def get_tasks(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    tasks = await task_service.get_tasks(db, current_user.id, skip, limit, is_completed)
+    service = TaskService(db)
+    tasks = await service.get_tasks(current_user.id, skip, limit, is_completed)
     return APIResponse(success=True, message="Tasks fetched successfully", data=tasks)
 
 
@@ -41,7 +44,8 @@ async def update_task(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    task = await task_service.update_task(task_id, updated_task, db, current_user.id)
+    service = TaskService(db)
+    task = await service.update_task(task_id, updated_task, current_user.id)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
     return APIResponse(success=True, message="Task updated successfully", data=task)
@@ -53,7 +57,8 @@ async def delete_task(
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
-    task = await task_service.delete_task(task_id, db, current_user.id)
+    service = TaskService(db)
+    task = await service.delete_task(task_id, current_user.id)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
     return APIResponse(success=True, message="Task deleted successfully", data=None)
