@@ -14,11 +14,7 @@ class Settings  (BaseSettings):
         env_file=Base_DIR/ ".env",
         env_file_encoding="utf-8",
     )
-    
-        
+
 @lru_cache
 def get_settings():
     return Settings() # type: ignore
-
-    
-
