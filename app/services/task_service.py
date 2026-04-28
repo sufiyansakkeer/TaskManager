@@ -3,6 +3,7 @@ from sqlalchemy import select
 
 from app.models.task import Task
 from app.schemas.task import TaskCreate
+from app.core.logger import logger
 
 
 async def create_task(
@@ -41,7 +42,7 @@ async def get_tasks(
     result= await db.execute(query)
     
     tasks = result.scalars().all()
-    
+    logger.info(f"{len(tasks)} is the length of the task in logger")
     return tasks
 
 async def update_task(
@@ -67,7 +68,7 @@ async def update_task(
     
     await db.commit()
     await db.refresh(task)
-    
+    logger.info("Task updated")
     return task
 
 async def delete_task(
@@ -85,9 +86,10 @@ async def delete_task(
     task = result.scalar_one_or_none()
     
     if not task:
+        logger.info("Task Not there")
         return None
     
     await db.delete(task)
     await db.commit()
-    
+    logger.info("Task Deleted")
     return {"message": "Task deleted"}
