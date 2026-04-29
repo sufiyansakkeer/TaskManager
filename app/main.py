@@ -15,17 +15,21 @@ app = FastAPI()
 app.include_router(tasks.router)
 app.include_router(auth_router.router)
 
+
 @app.exception_handler(HTTPException)
 async def handle_http_exception(request: Request, exc: HTTPException):
-    return await http_exception_handler(request,exc)
+    return await http_exception_handler(request, exc)
+
 
 @app.exception_handler(RequestValidationError)
 async def handle_validation_exception(request: Request, exc: RequestValidationError):
     return await validation_exception_handler(request, exc)
 
+
 @app.exception_handler(AppException)
 async def handle_app_exception(request: Request, exc: AppException):
     return await app_exception_handler(request, exc)
+
 
 @app.exception_handler(TaskNotFoundException)
 async def handle_task_not_found_exception(request: Request, exc: TaskNotFoundException):
