@@ -44,7 +44,7 @@ class TaskRepository:
         )
         return result.scalar_one_or_none()
 
-    async def update(self, task: Task, title: str, description: str):
+    async def update(self, task: Task, title: str, description: str | None):
         task.title = title
         task.description = description
         await self.db.commit()

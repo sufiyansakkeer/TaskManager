@@ -12,7 +12,7 @@ class Base(DeclarativeBase):
 
 engine = create_async_engine(
     settings.DATABASE_URL,
-    echo=True,
+    echo=True,  # log all sql queries (disable in production)
 )
 
 AsyncSessionLocal = async_sessionmaker(

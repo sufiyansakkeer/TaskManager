@@ -40,8 +40,8 @@ class TaskService:
             logger.info("Task Not there")
             raise TaskNotFoundException("Task not found")
 
-        updated = await self.update_task(
-            task_id=task_id, updated_task=updated_task, user_id=user_id
+        updated = await self.repo.update(
+            task, updated_task.title, updated_task.description
         )
 
         logger.info("Task updated")
@@ -54,5 +54,5 @@ class TaskService:
             logger.info("Task Not there")
             raise TaskNotFoundException("Task not found")
 
-        await self.repo.delete(task=task)
+        await self.repo.delete(task)
         return {"message": "Task deleted"}
