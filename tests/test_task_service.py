@@ -14,14 +14,16 @@ async def test_create_task(task_service):
     assert result.description == "Test Description"
     assert result.owner_id == 1
 
+
 @pytest.mark.asyncio
 async def test_delete_task_success(task_service):
     task = await task_service.create_task(
         TaskCreate(title="Task to Delete", description="To be deleted"), user_id=1
     )
-    await task_service.delete_task(task.id,1)
+    await task_service.delete_task(task.id, 1)
     tasks = await task_service.get_tasks(1)
-    assert len(tasks)==0
+    assert len(tasks) == 0
+
 
 @pytest.mark.asyncio
 async def test_get_tasks(task_service):
@@ -34,8 +36,9 @@ async def test_get_tasks(task_service):
     tasks = await task_service.get_tasks(1)
     assert len(tasks) == 2
 
+
 @pytest.mark.asyncio
 async def test_delete_task_not_found(task_service):
     with pytest.raises(HTTPException) as exc_info:
-        await task_service.delete_task(999,1)
-    assert exc_info.value.status_code ==404
+        await task_service.delete_task(999, 1)
+    assert exc_info.value.status_code == 404

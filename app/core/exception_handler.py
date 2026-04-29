@@ -2,45 +2,52 @@ from fastapi import HTTPException, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 
-from app.core.exception import AppException, TaskNotFoundException
+from app.core.exception import AppException, TaskNotFoundException, error_response
 
 
-async def task_not_found_exception_handler(request: Request, exc: Exception):
+# App-level exceptions
+async def app_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    if isinstance(exc, AppException):
+        return JSONResponse(
+            status_code=exc.status_code, content=error_response(exc.message)
+        )
+
     return JSONResponse(
-        status_code=404,
-        content={
-            "success": False,
-            "message": getattr(exc, "message", "Task not found"),
-            "data": None,
-        },
+        status_code=500,
+        content=error_response("Unexpected application error"),
     )
 
 
-async def app_exception_handler(request: Request, exc: Exception):
-
+# Fast api exceptions
+async def http_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    if isinstance(exc, HTTPException):
+        return JSONResponse(
+            status_code=exc.status_code,
+            content=error_response(exc.detail),
+        )
     return JSONResponse(
-        status_code=400,
-        content={
-            "success": False,
-            "message": getattr(exc, "message", str(exc)),
-            "data": None,
-        },
+        status_code=500,
+        content=error_response("HTTP error"),
     )
 
 
-async def http_exception_handler(request: Request, exc: HTTPException):
-    return JSONResponse(
-        status_code=exc.status_code,
-        content={"success": False, "message": exc.detail, "data": None},
-    )
-
-
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
+async def validation_exception_handler(
+    request: Request, exc: Exception
+) -> JSONResponse:
+    if isinstance(exc, RequestValidationError):
+        return JSONResponse(
+            status_code=422,
+            content=error_response("validation error", data=exc.errors()),
+        )
     return JSONResponse(
         status_code=422,
-        content={
-            "success": False,
-            "message": "Validation error",
-            "data": exc.errors(),
-        },
+        content=error_response("Invalid request"),
+    )
+
+
+# global
+async def generic_exception_handler(request: Request, exc: Exception) -> JSONResponse:
+    return JSONResponse(
+        status_code=500,
+        content=error_response("Internal server error"),
     )

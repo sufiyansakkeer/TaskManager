@@ -1,4 +1,3 @@
-
 import pytest
 from app.services.task_service import TaskService
 
@@ -12,17 +11,11 @@ class FakeTask:
 
 
 class FakeRepo:
-
     def __init__(self):
         self.tasks = []
 
     async def create(self, title, description, user_id):
-        task = FakeTask(
-            id=1,
-            title=title,
-            description=description,
-            owner_id=user_id
-        )
+        task = FakeTask(id=1, title=title, description=description, owner_id=user_id)
         self.tasks.append(task)
         return task
 
@@ -47,5 +40,5 @@ def fake_repo():
 @pytest.fixture
 def task_service(fake_repo):
     service = TaskService(db=None)
-    service.repo = fake_repo   # override real repo
+    service.repo = fake_repo  # override real repo
     return service
